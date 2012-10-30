@@ -1,0 +1,40 @@
+<project name="simple_test" default="all" basedir=".">
+    <path id="compile_classpath">
+        <fileset dir="lib">
+            <include name="*.jar"/>
+        </fileset>
+        <pathelement path="${java.class.path}/"/>
+        <pathelement path="build/classes/"/>
+        <fileset dir="/opt/selenium-grid">
+            <include name="selenium-server-standalone.jar" />
+        </fileset>
+    </path>
+    <target name="make.dirs" description="Make some dirs">
+        <mkdir dir="build"/>
+        <mkdir dir="build/classes"/>
+    </target>
+    <target name="clean" description="Clean up">
+        <delete dir="build"/>
+    </target>
+    <target name="rebuild" description="clean dirs and build" depends="clean, make.dirs">
+        <javac includeantruntime="false" destdir="build/classes" classpathref="compile_classpath">
+            <src path="src"/>
+        </javac>
+    </target>
+    <target name="all" description="Run Selenium tests by Junit" depends="rebuild">
+        <junit printsummary="withOutAndErr" haltonfailure="no">
+          <batchtest fork="yes">
+            <fileset dir="${basedir}/src">
+               <include name="*.java" />
+            </fileset>
+          </batchtest>
+          <classpath refid="compile_classpath"/>
+        </junit>
+    </target>
+    <target name="suite" description="Run Selenium tests defined in Suite.java" depends="rebuild">
+        <java classpathref="compile_classpath"
+            classname="Suite"
+            failonerror="true">
+         </java>
+    </target>
+</project>
